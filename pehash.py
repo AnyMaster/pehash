@@ -32,21 +32,28 @@ def get_pehash(file_name):
 
     # Stack Commit Size, rounded up to a value divisible by 4096,
     # Windows page boundary, 8 lower bits must be discarded
+    # in PE32+ is 8 bytes
     stack_commit = exe.OPTIONAL_HEADER.SizeOfStackCommit
     if stack_commit % 4096:
         stack_commit += 4096 - stack_commit % 4096
-    stack_commit = pack('uint:24', stack_commit >> 8)
+    stack_commit = pack('uint:56', stack_commit >> 8)
     pehash_bin.append(
-        stack_commit[:8] ^ stack_commit[8:16] ^ stack_commit[16:24])
+        stack_commit[:8] ^ stack_commit[8:16] ^
+        stack_commit[16:24] ^ stack_commit[24:32] ^
+        stack_commit[32:40] ^ stack_commit[40:48] ^ stack_commit[48:56])
 
 
     # Heap Commit Size, rounded up to page boundary size,
     # 8 lower bits must be discarded
+    # in PE32+ is 8 bytes
     heap_commit = exe.OPTIONAL_HEADER.SizeOfHeapCommit
     if heap_commit % 4096:
         heap_commit += 4096 - heap_commit % 4096
-    heap_commit = pack('uint:24', heap_commit >> 8)
-    pehash_bin.append(heap_commit[:8] ^ heap_commit[8:16] ^ heap_commit[16:24])
+    heap_commit = pack('uint:56', heap_commit >> 8)
+    pehash_bin.append(
+        heap_commit[:8] ^ heap_commit[8:16] ^
+        heap_commit[16:24] ^ heap_commit[24:32] ^
+        heap_commit[32:40] ^ heap_commit[40:48] ^ heap_commit[48:56])
 
     # Section structural information
     for section in exe.sections:
