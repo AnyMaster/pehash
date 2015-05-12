@@ -76,7 +76,8 @@ def get_pehash(file_name):
             if kolmogorov > 7:
                 kolmogorov = 7
         pehash_bin.append(pack('uint:8', kolmogorov))
-        
+
+    exe.close()
     assert 0 == pehash_bin.len % 8
     return sha1(pehash_bin.tobytes()).hexdigest()
 
