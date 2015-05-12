@@ -8,12 +8,11 @@ pehash, Portable Executable hash of structural properties
 __version__ = '1.0.0'
 __author__ = 'AnyMaster'
 
-import sys
-import hashlib
+from hashlib import sha1
 from bz2 import compress
 
 from pefile import PE
-from bitstring import pack, BitArray
+from bitstring import pack
 
 
 def get_pehash(file_name):
@@ -24,11 +23,11 @@ def get_pehash(file_name):
 
     # Image Characteristics
     img_chars = pack('uint:16', exe.FILE_HEADER.Characteristics)
-    pehash_bin = BitArray(img_chars[0:8] ^ img_chars[8:16])
+    pehash_bin = img_chars[0:8] ^ img_chars[8:16]
 
     # Subsystem
-    sub_chars = pack('uint:16', exe.FILE_HEADER.Machine)
-    pehash_bin.append(sub_chars[0:8] ^ sub_chars[8:16])
+    subsystem = pack('uint:16', exe.FILE_HEADER.Machine)
+    pehash_bin.append(subsystem[0:8] ^ subsystem[8:16])
 
     # Stack Commit Size, rounded up to a value divisible by 4096,
     # Windows page boundary, 8 lower bits must be discarded
@@ -41,7 +40,6 @@ def get_pehash(file_name):
         stack_commit[:8] ^ stack_commit[8:16] ^
         stack_commit[16:24] ^ stack_commit[24:32] ^
         stack_commit[32:40] ^ stack_commit[40:48] ^ stack_commit[48:56])
-
 
     # Heap Commit Size, rounded up to page boundary size,
     # 8 lower bits must be discarded
@@ -57,13 +55,13 @@ def get_pehash(file_name):
 
     # Section structural information
     for section in exe.sections:
-        # virtual address, 9 lower bits must be discarded
+        # Virtual Address, 9 lower bits must be discarded
         pehash_bin.append(pack('uint:24', section.VirtualAddress >> 9))
 
-        # raw size, 8 lower bits must be discarded
+        # Size Of Raw Data, 8 lower bits must be discarded
         pehash_bin.append(pack('uint:24', section.SizeOfRawData >> 8))
 
-        # section chars, 16 lower bits must be discarded
+        # Section Characteristics, 16 lower bits must be discarded
         sect_chars = pack('uint:16', section.Characteristics >> 16)
         pehash_bin.append(sect_chars[:8] ^ sect_chars[8:16])
 
@@ -80,9 +78,10 @@ def get_pehash(file_name):
         pehash_bin.append(pack('uint:8', kolmogorov))
         
     assert 0 == pehash_bin.len % 8
-    return hashlib.sha1(pehash_bin.tobytes()).hexdigest()
+    return sha1(pehash_bin.tobytes()).hexdigest()
 
 if __name__ == '__main__':
+    import sys
     if len(sys.argv) < 2:
         print "Error: no file specified"
         sys.exit(0)
