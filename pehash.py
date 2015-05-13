@@ -19,7 +19,7 @@ def get_pehash(file_name):
     """ Return pehash for PE file, sha1 of PE structural properties.
     """
 
-    exe = PE(file_name, fast_load= True)
+    exe = PE(file_name, fast_load=True)
 
     # Image Characteristics
     img_chars = pack('uint:16', exe.FILE_HEADER.Characteristics)
