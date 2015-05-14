@@ -4,8 +4,9 @@
 pehash, Portable Executable hash of structural properties
 
 @author: AnyMaster
+https://github.com/AnyMaster/pehash
 """
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __author__ = 'AnyMaster'
 
 from hashlib import sha1
@@ -15,11 +16,17 @@ from pefile import PE
 from bitstring import pack
 
 
-def get_pehash(file_name):
+def get_pehash(pe_file):
     """ Return pehash for PE file, sha1 of PE structural properties.
+
+    :param pe_file:     file name or instance of pefile.PE() class
+    :rtype : string     SHA1 in hexdigest format
     """
 
-    exe = PE(file_name, fast_load=True)
+    if isinstance(pe_file, PE):  # minimize mem. usage and time of execution
+        exe = pe_file
+    else:
+        exe = PE(pe_file, fast_load=True)
 
     # Image Characteristics
     img_chars = pack('uint:16', exe.FILE_HEADER.Characteristics)
@@ -77,8 +84,10 @@ def get_pehash(file_name):
                 kolmogorov = 7
         pehash_bin.append(pack('uint:8', kolmogorov))
 
-    exe.close()
     assert 0 == pehash_bin.len % 8
+    if not isinstance(pe_file, PE):
+        exe.close()
+
     return sha1(pehash_bin.tobytes()).hexdigest()
 
 if __name__ == '__main__':
