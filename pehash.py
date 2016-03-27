@@ -6,7 +6,7 @@ pehash, Portable Executable hash of structural properties
 @author: AnyMaster
 https://github.com/AnyMaster/pehash
 """
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 __author__ = 'AnyMaster'
 
 from hashlib import sha1
@@ -33,7 +33,7 @@ def get_pehash(pe_file):
     pehash_bin = img_chars[0:8] ^ img_chars[8:16]
 
     # Subsystem
-    subsystem = pack('uint:16', exe.FILE_HEADER.Machine)
+    subsystem = pack('uint:16', exe.OPTIONAL_HEADER.Subsystem)
     pehash_bin.append(subsystem[0:8] ^ subsystem[8:16])
 
     # Stack Commit Size, rounded up to a value divisible by 4096,
