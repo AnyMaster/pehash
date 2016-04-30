@@ -6,4 +6,4 @@ Implementation of pehash based on algorithm from
 ([html](https://www.usenix.org/legacy/event/leet09/tech/full_papers/wicherski/wicherski_html/),
  [pdf](https://www.usenix.org/legacy/event/leet09/tech/full_papers/wicherski/wicherski.pdf))
 
-Revised version: [pehashng](https://github.com/AnyMaster/pehashng)
+Revised version is here: [pehashng](https://github.com/AnyMaster/pehashng)
