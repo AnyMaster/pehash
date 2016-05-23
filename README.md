@@ -7,3 +7,4 @@ Implementation of pehash based on algorithm from
  [pdf](https://www.usenix.org/legacy/event/leet09/tech/full_papers/wicherski/wicherski.pdf))
 
 
+- 2016 May Revised pehash: [peHashNG](https://github.com/AnyMaster/pehashng)
